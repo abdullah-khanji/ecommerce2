@@ -1,0 +1,129 @@
+{% extends 'store/main.html' %} {% load static %} {% block content %}
+<div class="container" style="padding-top: 3%">
+    <form id="searchForm" action="/api/bot_search_api/" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="exampleInputEmail1" style="font-size: 2.5ch; padding-bottom: 1%">What's Your Search</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your Search" name="query" />
+        </div>
+
+        <button type="submit" class="btn btn-outline-danger">Search</button>
+    </form>
+</div>
+<script></script>
+<!--
+	<div class="row">
+		{% for product in products %}
+		<div class="col-lg-4">
+			<img class="thumbnail" src="{{product.image.url}}">
+			<div class="box-element product">
+				<h6><strong>{{product.name}}</strong></h6>
+				<hr>
+
+				<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+				
+				<a class="btn btn-outline-success" href="#">View</a>
+				<h4 style="display: inline-block; float: right"><strong>${{product.price}}</strong></h4>
+
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+	-->
+{% if data_name %}
+
+<h4 style="color: darkgray; padding-top: 2%">Search Result for {{query}} :</h4>
+<div class="row">
+    {% for data in data_name %}
+    <div class="col-lg-4">
+        <img class="thumbnail" src="{{data.image}}" />
+        <div class="box-element product">
+            <h6><strong>{{data.name}}</strong></h6>
+            <hr />
+
+            <button data-product="{{data.id}}" data-price="{{data.price}}" data-name="{{data.name}}" data-image="{{data.image}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">
+                Add to Cart
+            </button>
+            <!--product is the var from line 5 js-->
+            <a class="btn btn-outline-success" href="#">{{data.website}}</a>
+            <h4 style="display: inline-block; float: right">
+                <strong>$ {{data.price}}</strong>
+            </h4>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- for listing items using api you may edit this for styling -->
+<div class="row mt-2">
+    <div id="listAPI" class="card-deck"></div>
+</div>
+
+<script>
+    $.ajax({
+        url: "/api/",
+        method: "get",
+        success: function(respData) {
+            for (var i = 0; i <= respData.length + 1; i++) {
+                if (respData[i]["name"] === "") {
+                    respData[i]["name"] = "no name";
+                }
+                $("#listAPI").append(`
+					<div class="col-lg-4 mt-5">
+						<div class="box-element product">
+							<h6><strong>${respData[i]["name"]}</strong></h6>
+							<hr>
+							<button data-product="${respData[i]["id"]}" data-price="${respData[i]["price"]}" data-name="${respData[i]["name"]}" data-image="{{data.image}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add
+								to Cart</button>
+							<!--product is the var from line 5 js-->
+							<a class="btn btn-outline-success" href="#">{{data.website}}</a>
+							<h4 style="display: inline-block; float: right"><strong>$ ${respData[i]["price"]}</strong></h4>
+						</div>
+					</div>
+					`);
+            }
+        },
+    });
+    //***************** for search   ***************
+    var ToSearch = function() {
+        var search_url = $("#searchForm").attr("action_url");
+        var form = $(this);
+        console.log(search_url);
+        $("#listAPI").html("");
+        console.log(form.attr('action-url'))
+        $.ajax({
+            url: form.attr("action_url"),
+            method: "POST",
+            data: form.serialize(),
+            dataType: "json",
+            success: function(respData) {
+                console.log(respData);
+                for (var i = 0; i <= respData.length + 1; i++) {
+                    if (respData[i]["name"] === "") {
+                        respData[i]["name"] = "no name";
+                    }
+                    $("#listAPI").append(`
+							<div class="col-lg-4 mt-5">
+								<div class="box-element product">
+									<h6><strong>${respData[i]["name"]}</strong></h6>
+									<hr>
+									<button class="ToAdd" ok='check' data-product="${respData[i]["id"]}" data-price="${respData[i]["price"]}" data-name="${respData[i]["name"]}" data-image="{{data.image}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add
+										to Cart</button>
+									<!--product is the var from line 5 js-->
+									<a class="btn btn-outline-success" href="#">{{data.website}}</a>
+									<h4 style="display: inline-block; float: right"><strong>$ ${respData[i]["price"]}</strong></h4>
+								</div>
+							</div>
+							`);
+                }
+            },
+        });
+        return false;
+    };
+    //un comment this if you wish to appear my search..
+    // $("#searchForm").on("submit", ToSearch);
+</script>
+
+<!-- end listing items using api -->
+{% endblock content %}

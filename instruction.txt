@@ -1,0 +1,10 @@
+API URLS:
+1: "localhost:8000/api/" list of all products.
+2:"localhost:8000/api/1" show only detail of id=1 product
+3:"localhost:8000/api/bot_search_api/" will show your search.
+
+
+it is backend api running. it returns all in json format 
+if you have any mobile app want to connect with it you simply
+provide urls any one of them as you wish.
+
